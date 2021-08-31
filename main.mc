@@ -49,8 +49,8 @@ E8 00 01 00 00 00 00 00 ## virtual memory address
 F8 00 00 00 00 00 00 00 ## Offset of the segment in the file image
 F8 00 01 00 00 00 00 00 ## virtual memory address
 00 00 00 00 00 00 00 00 ## physical address
-40 00 00 00 00 00 00 00 ## size in bytes of the segment in the file image
-40 00 00 00 00 00 00 00 ## Size in bytes of the segment in memory
+46 00 00 00 00 00 00 00 ## size in bytes of the segment in the file image
+46 00 00 00 00 00 00 00 ## Size in bytes of the segment in memory
 00 00 00 00 00 00 00 00 ## Alignment
 ## PROGRAM HEADER END
 
@@ -61,13 +61,16 @@ F8 00 01 00 00 00 00 00 ## virtual memory address
 ## .data END
 
 ## CODE START
+e8 16 00 00 00 ## call PrintMessage == mov [rsp], rip; add rsp, 8; mov rip, PrintMessage
+48 b8 3c 00 00 00 00 00 00 00 ## mov rax, 60
+48 bf 2a 00 00 00 00 00 00 00 ## mov rdi, 42
+0f 05 ## syscall
+
+## Function PrintMessage
 48 b8 01 00 00 00 00 00 00 00 ## mov rax, 1
 48 bf 01 00 00 00 00 00 00 00 ## mov rdi, 1 
 48 be e8 00 01 00 00 00 00 00 ## mov rsi, message
 48 ba 0e 00 00 00 00 00 00 00 ## mov rdx, 14
 0f 05 ## syscall
-48 b8 3c 00 00 00 00 00 00 00 ## mov rax, 60
-48 bf 2a 00 00 00 00 00 00 00 ## mov rdi, 42
-0f 05 ## syscall
+c3 ## ret == sub rsp, 8; mov rsp, rip 
 ## CODE END
-
