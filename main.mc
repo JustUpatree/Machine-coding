@@ -49,8 +49,8 @@ E8 00 01 00 00 00 00 00 ## virtual memory address
 F8 00 00 00 00 00 00 00 ## Offset of the segment in the file image
 F8 00 01 00 00 00 00 00 ## virtual memory address
 00 00 00 00 00 00 00 00 ## physical address
-10 00 00 00 00 00 00 00 ## size in bytes of the segment in the file image
-10 00 00 00 00 00 00 00 ## Size in bytes of the segment in memory
+40 00 00 00 00 00 00 00 ## size in bytes of the segment in the file image
+40 00 00 00 00 00 00 00 ## Size in bytes of the segment in memory
 00 00 00 00 00 00 00 00 ## Alignment
 ## PROGRAM HEADER END
 
@@ -61,13 +61,13 @@ F8 00 01 00 00 00 00 00 ## virtual memory address
 ## .data END
 
 ## CODE START
-48 c7 c0 01 00 00 00
-48 c7 c7 01 00 00 00
-48 c7 c6 e8 00 01 00
-48 c7 c2 0e 00 00 00
-0f 05
-48 C7 C0 3C 00 00 00    
-48 C7 C7 2A 00 00 00    
-0F 05     
+48 b8 01 00 00 00 00 00 00 00 ## mov rax, 1
+48 bf 01 00 00 00 00 00 00 00 ## mov rdi, 1 
+48 be e8 00 01 00 00 00 00 00 ## mov rsi, message
+48 ba 0e 00 00 00 00 00 00 00 ## mov rdx, 14
+0f 05 ## syscall
+48 b8 3c 00 00 00 00 00 00 00 ## mov rax, 60
+48 bf 2a 00 00 00 00 00 00 00 ## mov rdi, 42
+0f 05 ## syscall
 ## CODE END
 
