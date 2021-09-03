@@ -4,12 +4,18 @@ section .text
 ; return value = numbers of bytes written
 int_to_string: 
     push rbx
-    push rdx
-    push rcx
-
+    
+    mov rcx, 0
     mov rax, rdi
     mov rbx, 10
-    mov rcx, 0
+
+    cmp rax, 0
+    jge .skip_negative
+    not rax
+    inc rax
+    mov [buffer], byte '-'
+    mov rcx, 1
+    .skip_negative:
 
     .loop:
     mov rdx, 0 ; zero out top 64 bits of the dividend
@@ -20,13 +26,19 @@ int_to_string:
     cmp rax, 0
     jne .loop
 
+    cmp rdi, 0
+    jl .skip_minus
     mov rdi, buffer
     mov rsi, rcx
+    jmp .end_if
+    .skip_minus:
+    mov rdi, buffer+1
+    lea rsi, [rcx-1]
+    .end_if:
+
     call reverse
 
     mov rax, rcx
-    pop rcx
-    pop rdx
     pop rbx
     ret
 
@@ -58,11 +70,10 @@ reverse:
     pop rdx
     pop rcx
     ret
-
-
+    
 global _start
 _start:
-    mov rdi, 100500
+    mov rdi, +0
     call int_to_string
 
     mov [buffer+rax], byte 10
