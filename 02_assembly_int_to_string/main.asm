@@ -1,10 +1,11 @@
 section .text
 
 ; rdi = int to convert
+; rsi = pointer to the buffer
 ; return value = numbers of bytes written
 int_to_string: 
     push rbx
-    
+
     mov rcx, 0
     mov rax, rdi
     mov rbx, 10
@@ -13,7 +14,7 @@ int_to_string:
     jge .skip_negative
     not rax
     inc rax
-    mov [buffer], byte '-'
+    mov [rsi], byte '-'
     mov rcx, 1
     .skip_negative:
 
@@ -21,23 +22,23 @@ int_to_string:
     mov rdx, 0 ; zero out top 64 bits of the dividend
     div rbx
     add rdx, 48 
-    mov [buffer+rcx], dl
+    mov [rsi+rcx], dl
     inc rcx
     cmp rax, 0
     jne .loop
 
     cmp rdi, 0
     jl .skip_minus
-    mov rdi, buffer
+    mov rdi, rsi
     mov rsi, rcx
     jmp .end_if
     .skip_minus:
-    mov rdi, buffer+1
+    lea rdi, [rsi+1]
     lea rsi, [rcx-1]
     .end_if:
 
     call reverse
-
+ 
     mov rax, rcx
     pop rbx
     ret
@@ -73,7 +74,8 @@ reverse:
     
 global _start
 _start:
-    mov rdi, +0
+    mov rdi, 0
+    mov rsi, buffer
     call int_to_string
 
     mov [buffer+rax], byte 10
