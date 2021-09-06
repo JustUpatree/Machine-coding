@@ -74,22 +74,22 @@ reverse:
     
 global _start
 _start:
-    mov rdi, 0
-    mov rsi, buffer
+    mov rdi, 100500
+    sub rsp, 21
+    mov rsi, rsp
     call int_to_string
 
-    mov [buffer+rax], byte 10
+    mov [rsp+rax], byte 10
     inc rax
 
     mov rdx, rax
     mov rax, 1
     mov rdi, 1
-    mov rsi, buffer
+    mov rsi, rsp
     syscall
+
+    add rsp, 21
 
     mov rax, 60
     mov rdi, 0
     syscall
-
-section .data
-buffer: times 21 db 0 
