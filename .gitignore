@@ -1,3 +1,5 @@
 *.bin
 xxd_cleaner
 *.o
+00_test_directory/
+.gitignore
