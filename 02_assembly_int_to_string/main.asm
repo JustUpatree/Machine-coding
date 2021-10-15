@@ -21,7 +21,7 @@ int_to_string:
     .loop:
     mov rdx, 0 ; zero out top 64 bits of the dividend
     div rbx
-    add rdx, 48 
+    add rdx, '0' 
     mov [rsi+rcx], dl
     inc rcx
     cmp rax, 0
@@ -37,9 +37,9 @@ int_to_string:
     lea rsi, [rcx-1]
     .end_if:
 
+    push rcx
     call reverse
- 
-    mov rax, rcx
+    pop rax
     pop rbx
     ret
 
@@ -47,8 +47,6 @@ int_to_string:
 ; rsi = buffer size
 ; return value = nothing
 reverse:
-    push rcx
-    push rdx
     push rbx
 
     mov rbx, 0
@@ -68,8 +66,6 @@ reverse:
     .end:
 
     pop rbx
-    pop rdx
-    pop rcx
     ret
     
 global _start
