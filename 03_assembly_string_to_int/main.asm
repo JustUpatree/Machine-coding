@@ -3,39 +3,60 @@ section .text
 
 ; rdi = pointer to string
 ; rsi = size of string
-; return value = converted 64-bit signed integer value
+; return value = rax : rdx
+; rax = bool value, valid input or not  
+; rdx = converted 64-bit signed integer value
 string_to_int:
+
     mov rcx, 0 ; counter 
     mov rax, 0
     mov r8, 10
-    mov r9, 0
+    mov r9, 0 ; is negative
 
-    cmp byte [rdi+rcx], 45
+    cmp rsi, 0
+    je .empty_input
+
+    cmp byte [rdi], 45
     jne .skip_minus
     add rcx, 1
     mov r9, 1
 
     .skip_minus:
 
-    .return:
+    .loop:
     cmp rcx, rsi
     je .finish
+    
     mov bl, [rdi+rcx]
+
+    cmp rbx, 47
+    jle .invalid_character
+    cmp rbx, 58
+    jge .invalid_character
+
     sub rbx, 48
     mul r8
+    cmp r9, 0
+    jne .sub_negative_value
     add rax, rbx
+    jmp .endif
+    .sub_negative_value:
+    sub rax, rbx
+    .endif:
+    jo .overflow
     add rcx, 1
-    jmp .return
+    jmp .loop
     .finish:
 
-    cmp r9, 1
-    jne .mul_minus
-    ; mov r8, -1
-    ; mul r8
-    not rax
-    inc rax
-    .mul_minus:
 
+    mov rdx, rax
+    mov rax, 1
+    ret
+
+    .empty_input:
+    .invalid_character:
+    .overflow:
+    mov rax, 0
     ret
 
 ; rdi = message for panic
@@ -54,36 +75,41 @@ panic:
 global _start
 _start:
 
+    sub rsp, 22
+
     mov rax, 0
     mov rdi, 0
-    mov rsi, input_buffer
-    mov rdx, input_buffer_length
+    mov rsi, rsp
+    mov rdx, 22
     syscall
 
     cmp rax, 0
-    jne valid_value
+    je .not_passed_validation
+
+    cmp byte [rsp + rax - 1], 10
+    je .valid_input_length
+    .not_passed_validation:
     mov rdi, error_message
     mov rsi, error_message_length
     call panic
 
-
-    valid_value:
+    .valid_input_length:
     dec rax
 
-    mov rdi, input_buffer
+    mov rdi, rsp
     mov rsi, rax
     call string_to_int
 
-    mov rdi, rax
+    cmp rax, 0
+    je .not_passed_validation
+    mov rdi, rdx
     call print_int
+
+    add rsp, 22
 
     mov rax, 60
     mov rdi, 0 
     syscall
-
-section .bss
-input_buffer: resb 100
-input_buffer_length: equ $ - input_buffer
 
 section .data
 error_message: db "Invalid input", 10
