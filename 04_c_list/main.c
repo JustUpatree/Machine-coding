@@ -5,9 +5,10 @@
 #include <string.h>
 
 const int LIST_SIZE = 10; 
-const int BUFFER_SIZE = 8;
+const int BUFFER_SIZE = 32;
 const int STDIN = 0;
 const int STDOUT = 1;
+const char *COMMAND_PREFIX = ">>>> "; 
 
 typedef enum 
 {
@@ -16,20 +17,12 @@ typedef enum
     CommandNotFound 
 } Command;
 
-void start()
+void print_list(int *list, int list_size)
 {
-
-}
-
-
-void print_list()
-{
-    int list[LIST_SIZE];
-    for(int i = 0; i < LIST_SIZE; i++)
+    for(int i = 0; i < list_size; i++)
     {
-        list[i] = rand() % 100;
         printf("%d", list[i]);
-        if(i + 1 != LIST_SIZE)
+        if(i + 1 != list_size)
         {
             printf(", ");
         }
@@ -62,21 +55,30 @@ int main()
 {
     srand(time(NULL));
     char buffer[BUFFER_SIZE];
-    int bytes_read = read(STDIN, buffer, BUFFER_SIZE);
-    buffer[bytes_read - 1] = '\0';
-    Command parse_command_value = parse_command(buffer);
-    if(parse_command_value == CommandDisplay)
+    int list[LIST_SIZE];
+    for(int i = 0; i < LIST_SIZE; i++)
     {
-        print_list();
-    } 
-    else if(parse_command_value == CommandNotFound)
-    {
-        printf("Command not found\n");
+        list[i] = rand() % 100;
     }
-    else
+    while(1)
     {
-        printf("Exiting\n");
+        printf("%s", COMMAND_PREFIX);
+        fgets(buffer, BUFFER_SIZE, stdin);
+        buffer[strlen(buffer) - 1] = '\0';
+        Command parse_command_value = parse_command(buffer);
+        if(parse_command_value == CommandDisplay)
+        {
+            print_list(list, LIST_SIZE);
+        } 
+        else if(parse_command_value == CommandExit)
+        {
+            printf("Exiting\n");
+            break;
+        }
+        else
+        {
+            printf("Command not found: %s\n", buffer);
+        }
     }
-
     return 0;
 }
