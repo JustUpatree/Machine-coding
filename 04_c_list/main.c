@@ -4,11 +4,18 @@
 #include <unistd.h>
 #include <string.h>
 
-const int LIST_SIZE = 10; 
+const int LIST_CAPACITY = 10; 
 const int BUFFER_SIZE = 32;
 const int STDIN = 0;
 const int STDOUT = 1;
-const char *COMMAND_PREFIX = ">>>> "; 
+const char *COMMAND_PREFIX = "> "; 
+
+typedef struct 
+{
+    int size;
+    int *data;
+} List;
+
 
 typedef enum 
 {
@@ -17,19 +24,26 @@ typedef enum
     CommandNotFound 
 } Command;
 
-void print_list(int *list, int list_size)
+void print_list(List *list) 
 {
-    for(int i = 0; i < list_size; i++)
+    if(list->size != 0)
     {
-        printf("%d", list[i]);
-        if(i + 1 != list_size)
+        for(int i = 0; i < list->size; i++)
         {
-            printf(", ");
+            printf("%d", list->data[i]);
+            if(i + 1 != list->size)
+            {
+                printf(", ");
+            }
+            else
+            {
+                printf("\n");
+            }
         }
-        else
-        {
-            printf("\n");
-        }
+    }
+    else
+    {
+        printf("Empty\n");
     }
 }
 
@@ -54,21 +68,20 @@ Command parse_command(char *buffer)
 int main()
 {
     srand(time(NULL));
-    char buffer[BUFFER_SIZE];
-    int list[LIST_SIZE];
-    for(int i = 0; i < LIST_SIZE; i++)
-    {
-        list[i] = rand() % 100;
-    }
+    List list;
+    list.size = 0;
+    int list_data[LIST_CAPACITY];
+    list.data = list_data;
     while(1)
     {
         printf("%s", COMMAND_PREFIX);
+        char buffer[BUFFER_SIZE];
         fgets(buffer, BUFFER_SIZE, stdin);
-        buffer[strlen(buffer) - 1] = '\0';
+        buffer[strlen(buffer) - 1] = '\0'; //remove new line
         Command parse_command_value = parse_command(buffer);
         if(parse_command_value == CommandDisplay)
         {
-            print_list(list, LIST_SIZE);
+            print_list(&list);
         } 
         else if(parse_command_value == CommandExit)
         {
