@@ -1,3 +1,3 @@
 set -ex
-gcc -g main.c -o main.bin
+gcc -g main.c list.c -o main.bin
 gdb main.bin

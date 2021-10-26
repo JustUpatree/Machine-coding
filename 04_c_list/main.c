@@ -1,73 +1,57 @@
 #include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <string.h>
 
-const int LIST_CAPACITY = 10; 
+#include "list.h"
+#include "list.h"
+
 const int BUFFER_SIZE = 32;
-const int STDIN = 0;
-const int STDOUT = 1;
 const char *COMMAND_PREFIX = "> "; 
-
-typedef struct 
-{
-    int size;
-    int *data;
-} List;
-
 
 typedef enum 
 {
     CommandDisplay,
     CommandExit,
-    CommandNotFound 
-} Command;
+    CommandNotFound,
+    CommandPush,
+    CommandPop
+} CommandType;
 
-void print_list(List *list) 
+typedef struct
 {
-    if(list->size != 0)
-    {
-        for(int i = 0; i < list->size; i++)
-        {
-            printf("%d", list->data[i]);
-            if(i + 1 != list->size)
-            {
-                printf(", ");
-            }
-            else
-            {
-                printf("\n");
-            }
-        }
-    }
-    else
-    {
-        printf("Empty\n");
-    }
-}
+    CommandType type;
+    int push_value;
+} Command;
 
 Command parse_command(char *buffer)
 {
-    Command parameter;
+    Command command;
     if(strcmp("display", buffer) == 0)
     {
-        parameter = CommandDisplay;
+        command.type = CommandDisplay;
     }
     else if(strcmp("exit", buffer) == 0)
     {
-        parameter = CommandExit;
+        command.type = CommandExit;
+    }
+    else if(strncmp("push ", buffer, 5) == 0)
+    {
+        command.push_value = atoi(&buffer[5]);
+        command.type = CommandPush;
+    }
+    else if(strcmp("pop", buffer) == 0)
+    {
+        command.type = CommandPop;
     }
     else
     {
-        parameter = CommandNotFound;
+        command.type = CommandNotFound;
     }
-    return parameter;
+    return command;
 }
 
 int main()
 {
-    srand(time(NULL));
     List list;
     list.size = 0;
     int list_data[LIST_CAPACITY];
@@ -78,17 +62,41 @@ int main()
         char buffer[BUFFER_SIZE];
         fgets(buffer, BUFFER_SIZE, stdin);
         buffer[strlen(buffer) - 1] = '\0'; //remove new line
-        Command parse_command_value = parse_command(buffer);
-        if(parse_command_value == CommandDisplay)
+        Command command = parse_command(buffer);
+        if(command.type == CommandDisplay)
         {
             print_list(&list);
         } 
-        else if(parse_command_value == CommandExit)
+        else if(command.type == CommandExit)
         {
             printf("Exiting\n");
             break;
         }
-        else
+        else if(command.type == CommandPush)
+        {
+            int is_success = push(&list, command.push_value);
+            if(is_success)
+            {
+                printf("Success push\n");
+            }
+            else
+            {
+                printf("Not enough memory to push\n");
+            }
+        }
+        else if(command.type == CommandPop)
+        {
+            int is_success = pop(&list);
+            if(is_success)
+            {
+                printf("Success pop\n");
+            }
+            else
+            {
+                printf("Nothing to pop\n");
+            }
+        }
+        else 
         {
             printf("Command not found: %s\n", buffer);
         }
