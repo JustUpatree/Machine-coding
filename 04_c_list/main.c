@@ -70,15 +70,8 @@ int main()
         }
         else if(command.type == CommandPush)
         {
-            int is_success = push(&list, command.push_value);
-            if(is_success)
-            {
-                printf("Success push\n");
-            }
-            else
-            {
-                printf("Not enough memory to push\n");
-            }
+            push(&list, command.push_value);
+            printf("Success push\n");
         }
         else if(command.type == CommandPop)
         {

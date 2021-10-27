@@ -9,7 +9,7 @@ typedef struct
 } List;
 
 void print_list(List *list);
-int push(List *list, int push_value);
+void push(List *list, int push_value);
 int pop(List *list);
 List new_list();
 void delete_list(List *list);

@@ -30,20 +30,15 @@ void print_list(List *list)
     }
 }
 
-int push(List *list, int push_value)
+void push(List *list, int push_value)
 {
-    int is_success;
-    if(list->size < list->capacity)
+    if(list->size == list->capacity)
     {
-        list->data[list->size] = push_value;
-        list->size++;
-        is_success = 1;
+        list->capacity *= 2;
+        list->data = realloc(list->data, list->capacity * sizeof(int));
     }
-    else
-    {
-        is_success = 0;
-    }
-    return is_success;
+    list->data[list->size] = push_value;
+    list->size++;
 }
 
 int pop(List *list)
