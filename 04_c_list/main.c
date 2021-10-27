@@ -3,7 +3,6 @@
 #include <string.h>
 
 #include "list.h"
-#include "list.h"
 
 const int BUFFER_SIZE = 32;
 const char *COMMAND_PREFIX = "> "; 
@@ -52,10 +51,7 @@ Command parse_command(char *buffer)
 
 int main()
 {
-    List list;
-    list.size = 0;
-    int list_data[LIST_CAPACITY];
-    list.data = list_data;
+    List list = new_list();
     while(1)
     {
         printf("%s", COMMAND_PREFIX);
@@ -101,5 +97,6 @@ int main()
             printf("Command not found: %s\n", buffer);
         }
     }
+    delete_list(&list);
     return 0;
 }

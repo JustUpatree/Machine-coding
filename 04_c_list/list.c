@@ -1,8 +1,11 @@
-#include <stdio.h>
-
 #include "list.h"
 
-const int LIST_CAPACITY = 10;    
+#include <stdlib.h>
+#include <stdio.h>
+
+
+
+const int DEFAULT_LIST_CAPACITY = 10;    
 
 void print_list(List *list) 
 {
@@ -30,7 +33,7 @@ void print_list(List *list)
 int push(List *list, int push_value)
 {
     int is_success;
-    if(list->size < LIST_CAPACITY)
+    if(list->size < list->capacity)
     {
         list->data[list->size] = push_value;
         list->size++;
@@ -56,4 +59,18 @@ int pop(List *list)
         is_success = 0;
     }
     return is_success;
+}
+
+List new_list()
+{
+    List list;
+    list.size = 0;
+    list.capacity = DEFAULT_LIST_CAPACITY;
+    list.data = malloc(list.capacity * sizeof(int));
+    return list; 
+}
+
+void delete_list(List *list)
+{
+    free(list->data);
 }
