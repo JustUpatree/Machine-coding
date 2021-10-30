@@ -13,13 +13,24 @@ typedef enum
     CommandExit,
     CommandNotFound,
     CommandPush,
-    CommandPop
+    CommandPop,
+    CommandRemoveIndex,
+    CommandInsert
 } CommandType;
 
 typedef struct
 {
     CommandType type;
-    int push_value;
+    union 
+    {
+        int push_value;
+        int remove_index_value;
+        struct 
+        {
+            int insert_index;
+            int insert_value;
+        };
+    };
 } Command;
 
 Command parse_command(char *buffer)
@@ -42,6 +53,17 @@ Command parse_command(char *buffer)
     {
         command.type = CommandPop;
     }
+    else if(strncmp("remove ", buffer, 7) == 0)
+    {
+        command.remove_index_value = atoi(&buffer[7]);
+        command.type = CommandRemoveIndex;
+    }
+    else if(strncmp("insert ", buffer, 7) == 0)
+    {
+        command.insert_index = atoi(&buffer[7]);
+        command.insert_value = atoi(strchr(&buffer[7], ' '));
+        command.type = CommandInsert;
+    }
     else
     {
         command.type = CommandNotFound;
@@ -57,7 +79,7 @@ int main()
         printf("%s", COMMAND_PREFIX);
         char buffer[BUFFER_SIZE];
         fgets(buffer, BUFFER_SIZE, stdin);
-        buffer[strlen(buffer) - 1] = '\0'; //remove new line
+        buffer[strlen(buffer) - 1] = '\0'; //index new line
         Command command = parse_command(buffer);
         if(command.type == CommandDisplay)
         {
@@ -83,6 +105,28 @@ int main()
             else
             {
                 printf("Nothing to pop\n");
+            }
+        }
+        else if(command.type == CommandRemoveIndex)
+        {   
+            if(remove_from_list(&list, command.remove_index_value))
+            {
+                printf("Success remove\n");
+            }
+            else
+            {
+                printf("Nothing to remove\n");
+            }
+        }
+        else if(command.type == CommandInsert)
+        {
+            if(insert_in_list(&list, command.insert_index, command.insert_value))
+            {
+                printf("Success insert\n");
+            }
+            else
+            {
+                printf("Nowhere to insert\n");
             }
         }
         else 
