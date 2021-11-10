@@ -1,3 +1,3 @@
 set -ex
-gcc main.c list.c -o main.bin
+gcc -Werror main.c sll.c -o main.bin
 ./main.bin

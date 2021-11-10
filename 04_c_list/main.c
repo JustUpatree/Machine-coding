@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "list.h"
+//#include "list.h"
+#include "sll.h"
 
 const int BUFFER_SIZE = 32;
 const char *COMMAND_PREFIX = "> "; 
@@ -134,6 +135,6 @@ int main()
             printf("Command not found: %s\n", buffer);
         }
     }
-    delete_list(&list);
+        delete_list(&list);
     return 0;
 }
